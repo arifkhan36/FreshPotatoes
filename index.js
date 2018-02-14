@@ -1,8 +1,10 @@
-const sqlite = require('sqlite'),
-      Sequelize = require('sequelize'),
-      request = require('request'),
-      express = require('express'),
-      app = express();
+ // form here
+ // install sqlite3 to local machine and setting database
+ const sqlite = require('sqlite3').verbose(),
+       Sequelize = require('sequelize'),
+       request = require('request'),
+       express = require('express'),
+       app = express();
 
 const { PORT=3000, NODE_ENV='development', DB_PATH='./db/database.db' } = process.env;
 
