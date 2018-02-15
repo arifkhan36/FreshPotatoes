@@ -102,19 +102,37 @@ function getFilmRecommendations(req, res) {
           }
           averageRating=sum/reviews.length;
           if (averageRating>MinimalRating){
-          console.log(averageRating);// printing only ratings that are greater than 4.0
-        }
+          //console.log(averageRating);// printing only ratings that are greater than 4.0
+          //film.averageRating = averageRating;
+          //film.reviews = reviews.length;
+          let filmToRecommend = {};
+          //console.log("data: ", data);
+          filmToRecommend.id = data[index].id;
+          filmToRecommend.title = data[index].title;
+          filmToRecommend.releaseDate = data[index].releaseDate;
+          filmToRecommend.genre = data[index].genre;
+          filmToRecommend.averageRating = averageRating;
+          filmToRecommend.reviews = reviews.length;
+
+
+
+          //filmToRecommend.title = .title;
+          console.log(filmToRecommend);
+
+
           }
 
         }
 
-      });
+      };
 
-    }
+    });
+
    }
 
- }
 
+ }
+}
 
 
 module.exports = app;
