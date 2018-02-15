@@ -90,7 +90,20 @@ function getFilmRecommendations(req, res) {
           //console.log("object: ", JSON.parse(response.body)[0]); //printing response body
           //console.log(""); //making distance
           let object = JSON.parse(response.body)[0];
-          console.log(object); //printing all reviews
+          //console.log(object); //printing all reviews
+
+          //calculate average rating of film
+          let averageRating;
+          let reviews = object.reviews;
+          let sum = 0; //sum of ratings needed for calculation
+          for (let i=0; i<reviews.length; i++){
+            //console.log(reviews[i]);
+             sum = sum+reviews[i].rating;
+          }
+          averageRating=sum/reviews.length;
+          if (averageRating>MinimalRating){
+          console.log(averageRating);// printing only ratings that are greater than 4.0
+        }
           }
 
         }
