@@ -86,8 +86,12 @@ function getFilmRecommendations(req, res) {
         //let obj = JSON.parse(response.body);
         }
         else{
-          console.log("body: ", response.body);
-          console.log("");
+          if (JSON.parse(response.body)[0].reviews.length >= MinimumNumberOfReviews){ //condition 1
+          //console.log("object: ", JSON.parse(response.body)[0]); //printing response body
+          //console.log(""); //making distance
+          let object = JSON.parse(response.body)[0];
+          console.log(object); //printing all reviews
+          }
 
         }
 
