@@ -69,24 +69,31 @@ function getFilmRecommendations(req, res) {
 
 
     function sortFilms(dataDb) {
-      console.log('trying ');
-      console.log(dataDb[0].id);
-      request(ThirdPartyApi + '?films=8', function(error, response) {
-        if(!error){
-        console.log(response);
-        console.log("a");
+      //console.log(dataDb);
+      let numberThirdPartyAPIcalls = 0;
 
-        let obj = JSON.parse(response.body);
+
+      for(let index=0; index<dataDb.length; index++){
+
+
+      //console.log(dataDb[index]);
+      request('http://credentials-api.generalassemb.ly/4576f55f-c427-4cfc-a11c-5bfe914ca6c1?films='+dataDb[index].id, function(error, response) {
+        numberThirdPartyAPIcalls++;
+        if(error){
+        console.log(error); //handlin error
+
+
+        //let obj = JSON.parse(response.body);
         }
         else{
-          //handle arror
-          console.log(error);
+          console.log("body: ", response.body);
+          console.log("");
+
         }
 
       });
 
-
-
+    }
    }
 
  }
