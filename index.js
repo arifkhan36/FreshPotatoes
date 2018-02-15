@@ -31,6 +31,7 @@ app.get('/films/:id/recommendations', getFilmRecommendations);
 function getFilmRecommendations(req, res) {
    res.status(500).send('Not Implemented');
    let filmId = req.params.id;
+   let data = [];
 
     db.all(`SELECT films.id, films.title, films.release_date,  genres.name FROM films
              INNER JOIN genres ON films.genre_id=genres.id
@@ -47,10 +48,17 @@ function getFilmRecommendations(req, res) {
       throw err;
     }
     rows.forEach(function(row) {
-      console.log(row.title);
-      console.log(row.id);
-      console.log(row.release_date);
-      console.log(row.name);
+      let film = {};
+      film.id = row.id;
+      film.title = row.title;
+      film.releaseDate = row.release_date;
+      film.genre = row.name;
+      data.push(film);
+      console.log(film);
+      //console.log(row.title);
+      //console.log(row.id);
+      //console.log(row.release_date);
+      //console.log(row.name);
 
     });
   });
