@@ -54,15 +54,43 @@ function getFilmRecommendations(req, res) {
       film.releaseDate = row.release_date;
       film.genre = row.name;
       data.push(film);
-      console.log(film);
+      //console.log(film);
       //console.log(row.title);
       //console.log(row.id);
       //console.log(row.release_date);
       //console.log(row.name);
+      //sortFilms();
+
 
     });
+    //console.log(data);
+    sortFilms(data);
   });
 
-}
+
+    function sortFilms(dataDb) {
+      console.log('trying ');
+      console.log(dataDb[0].id);
+      request(ThirdPartyApi + '?films=8', function(error, response) {
+        if(!error){
+        console.log(response);
+        console.log("a");
+
+        let obj = JSON.parse(response.body);
+        }
+        else{
+          //handle arror
+          console.log(error);
+        }
+
+      });
+
+
+
+   }
+
+ }
+
+
 
 module.exports = app;
