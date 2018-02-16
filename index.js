@@ -31,6 +31,8 @@ app.get('/films/:id/recommendations', getFilmRecommendations);
 function getFilmRecommendations(req, res) {
    res.status(500).send('Not Implemented');
    let filmId = req.params.id;
+   limit = 10; //default
+   offset = 0;
    let data = [];
 
     db.all(`SELECT films.id, films.title, films.release_date,  genres.name FROM films
@@ -69,7 +71,7 @@ function getFilmRecommendations(req, res) {
 
 
     function sortFilms(dataDb) {
-      //console.log(dataDb);
+      let recommendations = [];
       let numberThirdPartyAPIcalls = 0;
 
 
@@ -99,7 +101,7 @@ function getFilmRecommendations(req, res) {
           for (let i=0; i<reviews.length; i++){
             //console.log(reviews[i]);
              sum = sum+reviews[i].rating;
-          }
+          }//for
           averageRating=sum/reviews.length;
           if (averageRating>MinimalRating){
           //console.log(averageRating);// printing only ratings that are greater than 4.0
@@ -111,28 +113,43 @@ function getFilmRecommendations(req, res) {
           filmToRecommend.title = data[index].title;
           filmToRecommend.releaseDate = data[index].releaseDate;
           filmToRecommend.genre = data[index].genre;
-          filmToRecommend.averageRating = averageRating;
+          filmToRecommend.averageRating = Number(averageRating.toFixed(2));
           filmToRecommend.reviews = reviews.length;
+          recommendations.push(filmToRecommend);
 
 
 
           //filmToRecommend.title = .title;
-          console.log(filmToRecommend);
+          //console.log(filmToRecommend);
 
 
-          }
 
+
+
+          //console.log(numberThirdPartyAPIcalls);
         }
+        //console.log(numberThirdPartyAPIcalls);
+        //her we have to create response using if statement
+                  //if(true){
+          if (numberThirdPartyAPIcalls === dataDb.length){
+            //console.log(numberThirdPartyAPIcalls);
+            //console.log(dataDb.length);
 
+            let obj = {};
+            obj.recommendations = recommendations;
+            obj.meta = {limit: limit, offset: offset};
+            console.log(obj);
+            //here we have to send our object as response
+          }
       };
 
-    });
+    };
 
-   }
+   })//end of request;
 
 
- }
+     }
+       }
 }
-
 
 module.exports = app;
