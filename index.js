@@ -26,13 +26,14 @@ app.get('/films/:id/recommendations', getFilmRecommendations);
 function getFilmRecommendations(req, res, next) {
    //res.status(500).send('Not Implemented');
    let filmId = req.params.id;
+   let DataBaseFetchData = [];
    //ERORR HANLING FOR filmID
 
    if (isNaN(filmId) || filmId === undefined) {
     return res.status(422).json({ message: "key missing" });
     }
 
-    // INVALID QUERY PARMS
+    // INVALID QUERY PARAMS
   if (isNaN(parseInt(req.query.offset)) && isNaN(parseInt(req.query.limit))) {
     if (
       !req.originalUrl.endsWith("recommendations") &&
@@ -41,15 +42,15 @@ function getFilmRecommendations(req, res, next) {
       return res.status(422).json({ message: "key missing" });
     }
   }
-   //................................
+
    let limit = req.query.limit
    let offset = req.query.offset;
    if (limit === null || isNaN(limit)){limit = 10;} //to default, limit cannit be a null nor string
    if (offset === null ||isNaN(offset)){let offset = 0;} //default, offset cannot be a null nor string
    limit =Number(req.query.limit);
    offset =Number(req.query.offset);
-   if(!Number.isInteger(limit)){limit=10;} //to default, limit cannot be racioanal number
-   if(!Number.isInteger(offset)){offset=0;} //to default, offset cannot be racional number
+   if(!Number.isInteger(limit)){limit=10;} //to default, limit cannot be ratioanal number
+   if(!Number.isInteger(offset)){offset=0;} //to default, offset cannot be rational number
    if(limit<0){limit=10;} //to default, limit cannot be negative
    if(offset<0){offset=10;} //to default, offset cannot be negative
    let data = [];
@@ -67,6 +68,13 @@ function getFilmRecommendations(req, res, next) {
     if (err) {
       throw err;
     }
+         DataBaseFetchData = rows;
+        // No DB Response
+        if (!DataBaseFetchData.length > 0) {
+          return res.json({ message: `No Films with '${filmId}' ID` });
+        }
+
+
     rows.forEach(function(row) {
       let film = {};
       film.id = row.id;
@@ -105,12 +113,12 @@ function getFilmRecommendations(req, res, next) {
             let averageRating;
             let reviews = object.reviews;
             let sum = 0; //sum of ratings needed for calculation
-            for (let i=0; i<reviews.length; i++){
+            for (let i= 0; i < reviews.length; i++){
             //console.log(reviews[i]);
-             sum = sum+reviews[i].rating;
+             sum = sum + reviews[i].rating;
             }//for
-            averageRating=sum/reviews.length;
-            if (averageRating>MinimalRating){
+            averageRating = sum/reviews.length;
+            if (averageRating > MinimalRating){
             //console.log(averageRating);// printing only ratings that are greater than 4.0
             //film.averageRating = averageRating;
             //film.reviews = reviews.length;
@@ -123,9 +131,13 @@ function getFilmRecommendations(req, res, next) {
             filmToRecommend.averageRating = Number(averageRating.toFixed(2));
             filmToRecommend.reviews = reviews.length;
             recommendations.push(filmToRecommend);
-          //filmToRecommend.title = .title;
-          //console.log(filmToRecommend);
-          //console.log(numberThirdPartyAPIcalls);
+            //filmToRecommend.reviews = .title;
+            recommendations.sort(function(a, b) {
+            return parseFloat(b.averageRating) - parseFloat(a.averageRating);
+             });
+            //recommendations.sort(sort_by('reviews', true, parseInt));
+            //console.log(filmToRecommend);
+            //console.log(numberThirdPartyAPIcalls);
           }
           //console.log(numberThirdPartyAPIcalls);
           //her we have to create response using if statement
