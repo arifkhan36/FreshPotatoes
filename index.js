@@ -27,6 +27,20 @@ function getFilmRecommendations(req, res, next) {
    //res.status(500).send('Not Implemented');
    let filmId = req.params.id;
    //ERORR HANLING FOR filmID
+
+   if (isNaN(filmId) || filmId === undefined) {
+    return res.status(422).json({ message: "key missing" });
+    }
+
+    // INVALID QUERY PARMS
+  if (isNaN(parseInt(req.query.offset)) && isNaN(parseInt(req.query.limit))) {
+    if (
+      !req.originalUrl.endsWith("recommendations") &&
+      !req.originalUrl.endsWith("recommendations/")
+    ) {
+      return res.status(422).json({ message: "key missing" });
+    }
+  }
    //................................
    let limit = req.query.limit
    let offset = req.query.offset;
@@ -120,16 +134,9 @@ function getFilmRecommendations(req, res, next) {
             JSONformat(recommendations);
             //console.log(numberThirdPartyAPIcalls);
             //console.log(dataDb.length);
-            ////let obj = {};
-            /////obj.recommendations = recommendations;
-            ////obj.meta = {limit: limit, offset: offset};
-            ////console.log(obj);
-            //here we have to send our object as response
-            ////res.json(obj);
+
             }
-             // else {
-             //   console.log(error)
-             // }
+
           };
         };
       })//end of request;
