@@ -88,14 +88,14 @@ function getFilmRecommendations(req, res, next) {
       //console.log(row.release_date);
       //console.log(row.name);
       //sortFilms();
+      });
+      //console.log(data);
+      sortFilms(data);
     });
-    //console.log(data);
-    sortFilms(data);
-  });
-    function sortFilms(dataDb) {
-      let recommendations = [];
-      let numberThirdPartyAPIcalls = 0;
-      for(let index=0; index<dataDb.length; index++){
+      function sortFilms(dataDb) {
+        let recommendations = [];
+        let numberThirdPartyAPIcalls = 0;
+        for(let index=0; index<dataDb.length; index++){
         //console.log(dataDb[index]);
         request('http://credentials-api.generalassemb.ly/4576f55f-c427-4cfc-a11c-5bfe914ca6c1?films='+dataDb[index].id, function(error, response) {
            numberThirdPartyAPIcalls++;
@@ -104,61 +104,59 @@ function getFilmRecommendations(req, res, next) {
           //let obj = JSON.parse(response.body);
           }
           else{
-        if (JSON.parse(response.body)[0].reviews.length >= MinimumNumberOfReviews){ //condition 1
-             //console.log("object: ", JSON.parse(response.body)[0]); //printing response body
-             //console.log(""); //making distance
-             let object = JSON.parse(response.body)[0];
-             //console.log(object); //printing all reviews
-            //calculate average rating of film
-            let averageRating;
-            let reviews = object.reviews;
-            let sum = 0; //sum of ratings needed for calculation
-            for (let i= 0; i < reviews.length; i++){
-            //console.log(reviews[i]);
-             sum = sum + reviews[i].rating;
-            }//for
-            averageRating = sum/reviews.length;
-            if (averageRating > MinimalRating){
-            //console.log(averageRating);// printing only ratings that are greater than 4.0
-            //film.averageRating = averageRating;
-            //film.reviews = reviews.length;
-            let filmToRecommend = {};
-            //console.log("data: ", data);
-            filmToRecommend.id = data[index].id;
-            filmToRecommend.title = data[index].title;
-            filmToRecommend.releaseDate = data[index].releaseDate;
-            filmToRecommend.genre = data[index].genre;
-            filmToRecommend.averageRating = Number(averageRating.toFixed(2));
-            filmToRecommend.reviews = reviews.length;
-            recommendations.push(filmToRecommend);
-            //filmToRecommend.reviews = .title;
-            recommendations.sort(function(a, b) {
-            return parseFloat(b.averageRating) - parseFloat(a.averageRating);
-             });
-            //recommendations.sort(sort_by('reviews', true, parseInt));
-            //console.log(filmToRecommend);
-            //console.log(numberThirdPartyAPIcalls);
-          }
-          //console.log(numberThirdPartyAPIcalls);
-          //her we have to create response using if statement
-                  //if(true){
-          if ( dataDb.length === numberThirdPartyAPIcalls){
-            JSONformat(recommendations);
-            //console.log(numberThirdPartyAPIcalls);
-            //console.log(dataDb.length);
+           if (JSON.parse(response.body)[0].reviews.length >= MinimumNumberOfReviews){ //condition 1
+               //console.log("object: ", JSON.parse(response.body)[0]); //printing response body
+               //console.log(""); //making distance
+               let object = JSON.parse(response.body)[0];
+               //console.log(object); //printing all reviews
+               //calculate average rating of film
+               let averageRating;
+               let reviews = object.reviews;
+               let sum = 0; //sum of ratings needed for calculation
+               for (let i= 0; i < reviews.length; i++){
+               //console.log(reviews[i]);
+               sum = sum + reviews[i].rating;
+               }//for
+               averageRating = sum/reviews.length;
+             if (averageRating > MinimalRating){
+                //console.log(averageRating);// printing only ratings that are greater than 4.0
+                //film.averageRating = averageRating;
+                //film.reviews = reviews.length;
+               let filmToRecommend = {};
+               //console.log("data: ", data);
+               filmToRecommend.id = data[index].id;
+               filmToRecommend.title = data[index].title;
+               filmToRecommend.releaseDate = data[index].releaseDate;
+               filmToRecommend.genre = data[index].genre;
+               filmToRecommend.averageRating = Number(averageRating.toFixed(2));
+               filmToRecommend.reviews = reviews.length;
+               recommendations.push(filmToRecommend);
 
-            }
+               // sorting the averageRating where we can see the high to low
+               recommendations.sort(function(low, high) {
+               return parseFloat(high.averageRating) - parseFloat(low.averageRating);
+               });
+               //console.log(filmToRecommend);
+               //console.log(numberThirdPartyAPIcalls);
+              }
+              //console.log(numberThirdPartyAPIcalls);
+             //her we have to create response using if statement
+             if ( dataDb.length === numberThirdPartyAPIcalls){
+                JSONformat(recommendations);
+                //console.log(numberThirdPartyAPIcalls);
+                //console.log(dataDb.length);
 
+              }
+            };
           };
-        };
       })//end of request;
-      function JSONformat(APIData) {
-      let obj = {
-      recommendations: APIData.splice(offset, limit),
-      meta: {limit:limit, offset:offset }
-    };
-    res.json(obj);
-    }
+        function JSONformat(APIData) {
+            let obj = {
+              recommendations: APIData.splice(offset, limit),
+              meta: {limit:limit, offset:offset }
+            };
+         res.json(obj);
+        }
     }
   }
 }
